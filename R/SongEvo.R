@@ -101,11 +101,25 @@ SongEvo <- function(init.inds,
   
   #Further prepare initial individuals 
   if(is.null(male.fledge.n)) {
+    if(n.territories >= nrow(init.inds)){
+      init.inds$territory <- rep(1,nrow(init.inds))
+    } else {
+      init.inds$territory <- rep(0,nrow(init.inds))
+      init.inds$territory[sample.int(nrow(init.inds),size=n.territories)] = 1
+    }
     male.fledge.n <- as.integer(rnorm(nrow(init.inds), male.fledge.n.mean, male.fledge.n.sd))
+    male.fledge.n[init.inds$territory == 0] = 0
+  } else{
+    init.inds$territory <- rep(1,nrow(init.inds))
+    if(any(male.fledge.n < 0 )){
+      init.inds$territory[male.fledge.n < 0] = 0
+      male.fledge.n[male.fledge.n < 0]=0
+    } 
+    stopifnot(sum(male.fledge.n >= 0 ) > n.territories) 
   }
   init.inds$male.fledglings <- sapply(male.fledge.n, function(n.children) sum(round(runif(n.children,0,1))))
   init.inds$female.fledglings <- male.fledge.n - init.inds$male.fledglings 
-  init.inds$territory <- rep(1, n.territories)
+  
   init.inds$father <- 0
   init.inds$sex <- 'M'
   init.inds$fitness <- 1
