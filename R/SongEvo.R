@@ -115,7 +115,7 @@ SongEvo <- function(init.inds,
       init.inds$territory[male.fledge.n < 0] = 0
       male.fledge.n[male.fledge.n < 0]=0
     } 
-    stopifnot(sum(male.fledge.n >= 0 ) > n.territories) 
+    stopifnot(sum(male.fledge.n >= 0 ) <= n.territories) 
   }
   init.inds$male.fledglings <- sapply(male.fledge.n, function(n.children) sum(round(runif(n.children,0,1))))
   init.inds$female.fledglings <- male.fledge.n - init.inds$male.fledglings 
