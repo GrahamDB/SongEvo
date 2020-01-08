@@ -451,7 +451,7 @@ SongEvo <- function(init.inds,
       # stopifnot(children$father==tutors$id[map.key])
       # child=which(inds$age==1)
       # singing.inds <- subset(inds, inds$age>1)
-      key=spDists(as.matrix(tutors[,c("x","y")]),longlat = TRUE)[map.key,] <= integrate.dist
+      key=spDists(as.matrix(tutors[,c("x","y")]),longlat = TRUE)[map.key, , drop =FALSE] <= integrate.dist
       rownames(key) <- children$id
       colnames(key) <- tutors$id
       tutors.df <- as.data.frame(key)
