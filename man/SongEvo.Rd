@@ -51,9 +51,9 @@ SongEvo(init.inds, females = 1, iteration = 3, steps = 10,
 
 \item{prestige.bias}{Learners will preferentially learn from males with more offspring. Options are a user defined vector of fitness reduction (e.g. c(.95,.25)), or FALSE.}
 
-\item{learn.m}{How males aquire a trait. Options are 'default', where males take the weighted average of tutors' traits according to their fitness values, or the name of a user defined function that takes id as a parameter and returns traits.}
+\item{learn.m}{How males aquire a trait. Options are "default", where males take the weighted average of tutors' traits according to their fitness values, or the name of a user defined function that takes id as a parameter and returns traits.}
 
-\item{learn.f}{How females aquire a trait. Options are 'default', where females take the weighted average of tutors traits according to their fitness values, or the name of a user defined function that takes id as a parameter and returns traits.}
+\item{learn.f}{How females aquire a trait. Options are "default", where females take the weighted average of tutors traits according to their fitness values, or the name of a user defined function that takes id as a parameter and returns traits.}
 
 \item{learning.error.d}{Direction of learning error (measured in trait units, e.g. Hz).}
 
@@ -92,7 +92,32 @@ SongEvo(init.inds, females = 1, iteration = 3, steps = 10,
 \item{all}{Save data for all individuals? Options are TRUE or FALSE.}
 }
 \value{
-three objects. First, currently alive individuals are stored in a data frame called “inds.”  Values within “inds” are updated throughout each of the iterations of the model, and “inds” can be viewed after the model is completed.  Second, an array (i.e. a multi-dimensional table) entitled “summary.results” includes population summary values for each time step (dimension 1) in each iteration (dimension 2) of the model.  Population summary values are contained in five additional dimensions: population size for each time step of each iteration (“sample.n”), the population mean and variance of the song feature studied (“trait.pop.mean” and “trait.pop.variance”), with associated lower (“lci”) and upper (“uci”) confidence intervals.  Third, individual values may optionally be concatenated and saved to one data frame entitled “all.inds.”  all.inds can become quite large, and is therefore only recommended if additional data analyses are desired.
+A list of seven objects. 
+First, currently alive males are stored in a data frame called “inds”.  Values within 
+“inds” are updated throughout each of the iterations of the model, and “inds” can be 
+viewed after the model is completed for the last iteration.  
+
+Second, an array (i.e. a multi-dimensional table) entitled “summary.results” includes 
+population summary values for each time step (dimension 1) in each iteration (dimension 2) 
+of the model.  
+Population summary values are contained in five additional values (dimension 3): 
+the population size for each time step of each iteration (“sample.n”), 
+the population mean and variance of the song feature studied (“trait.pop.mean” and “trait.pop.variance”), 
+with associated lower (“lci”) and upper (“uci”) confidence intervals.
+
+Third, individual values for males may optionally be concatenated and saved to one data frame entitled “all.inds”.  
+all.inds can become quite large, and is therefore only recommended if additional data analyses are desired. 
+
+Fourth, currently alive females are stored in a data frame called “females”  Values within 
+“females” are updated throughout each of the iterations of the model, and “females” can be 
+viewed after the model is completed for the last iteration.  
+
+Fifth, individual values for females may optionally be concatenated and saved to one data frame entitled “all.females”  
+all.females can become quite large, and is therefore only recommended if additional data analyses are desired. 
+
+Sixth, a data.frame of any content bias information.
+
+Seventh, the total processing time required for this analysis.
 }
 \description{
 This function simulates bird song evolution. Submodels are performed once per time step, and include fledging from the nest, song learning, ageing and death, dispersal, competition for territories, mate attraction, and reproduction.

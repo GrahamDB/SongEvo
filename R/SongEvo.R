@@ -19,8 +19,8 @@
 #' @param conformity.bias If an individual learns from their ('father'), all males within a specified radius ('integrate'), or FALSE if no conformity bias.
 #' @param integrate.dist Distance over which tutor values are integrated for learning.
 #' @param prestige.bias Learners will preferentially learn from males with more offspring. Options are a user defined vector of fitness reduction (e.g. c(.95,.25)), or FALSE.
-#' @param learn.m How males aquire a trait. Options are 'default', where males take the weighted average of tutors' traits according to their fitness values, or the name of a user defined function that takes id as a parameter and returns traits.
-#' @param learn.f How females aquire a trait. Options are 'default', where females take the weighted average of tutors traits according to their fitness values, or the name of a user defined function that takes id as a parameter and returns traits.
+#' @param learn.m How males aquire a trait. Options are "default", where males take the weighted average of tutors' traits according to their fitness values, or the name of a user defined function that takes id as a parameter and returns traits.
+#' @param learn.f How females aquire a trait. Options are "default", where females take the weighted average of tutors traits according to their fitness values, or the name of a user defined function that takes id as a parameter and returns traits.
 #' @param learning.error.d Direction of learning error (measured in trait units, e.g. Hz).
 #' @param learning.error.sd The standard deviation of imitation error.  
 #' @param mortality.a.m Annual mortality of adult males.
@@ -40,7 +40,32 @@
 #' @param prin Print summary values after each timestep has completed? Options are TRUE or FALSE. 
 #' @param all Save data for all individuals? Options are TRUE or FALSE. 
 #' 
-#' @return three objects. First, currently alive individuals are stored in a data frame called “inds.”  Values within “inds” are updated throughout each of the iterations of the model, and “inds” can be viewed after the model is completed.  Second, an array (i.e. a multi-dimensional table) entitled “summary.results” includes population summary values for each time step (dimension 1) in each iteration (dimension 2) of the model.  Population summary values are contained in five additional dimensions: population size for each time step of each iteration (“sample.n”), the population mean and variance of the song feature studied (“trait.pop.mean” and “trait.pop.variance”), with associated lower (“lci”) and upper (“uci”) confidence intervals.  Third, individual values may optionally be concatenated and saved to one data frame entitled “all.inds.”  all.inds can become quite large, and is therefore only recommended if additional data analyses are desired. 
+#' @return A list of seven objects. 
+#' First, currently alive males are stored in a data frame called “inds”.  Values within 
+#' “inds” are updated throughout each of the iterations of the model, and “inds” can be 
+#' viewed after the model is completed for the last iteration.  
+#' 
+#' Second, an array (i.e. a multi-dimensional table) entitled “summary.results” includes 
+#' population summary values for each time step (dimension 1) in each iteration (dimension 2) 
+#' of the model.  
+#' Population summary values are contained in five additional values (dimension 3): 
+#' the population size for each time step of each iteration (“sample.n”), 
+#' the population mean and variance of the song feature studied (“trait.pop.mean” and “trait.pop.variance”), 
+#' with associated lower (“lci”) and upper (“uci”) confidence intervals.
+#' 
+#' Third, individual values for males may optionally be concatenated and saved to one data frame entitled “all.inds”.  
+#' all.inds can become quite large, and is therefore only recommended if additional data analyses are desired. 
+#' 
+#' Fourth, currently alive females are stored in a data frame called “females”  Values within 
+#' “females” are updated throughout each of the iterations of the model, and “females” can be 
+#' viewed after the model is completed for the last iteration.  
+#' 
+#' Fifth, individual values for females may optionally be concatenated and saved to one data frame entitled “all.females”  
+#' all.females can become quite large, and is therefore only recommended if additional data analyses are desired. 
+#' 
+#' Sixth, a data.frame of any content bias information.
+#' 
+#' Seventh, the total processing time required for this analysis.
 #' 
 #' @example inst/examples/SongEvoExamples.R
 #' 
@@ -139,11 +164,17 @@ SongEvo <- function(init.inds,
   all.inds$iteration <- 0
   all.inds0 <- all.inds[which(is.na(all.inds$trait)),] #This removes all data from all.inds.  
   all.inds<-NULL
+  
+  
   step_list=list()
-  length(step_list)<-steps
-  names(step_list)<-paste0("T",1:steps)
+  length(step_list)<-steps+1
+  names(step_list)<-paste0("T",0:steps)
   inds.all_list<-lapply(1:iteration,function(x) step_list)
   names(inds.all_list)<-paste0("I",1:iteration)
+  females.all_list<-lapply(1:iteration,function(x) step_list)
+  names(females.all_list)<-paste0("I",1:iteration)
+  females.init_list<-lapply(1:iteration,function(x) all.inds0)
+  names(females.init_list)<-paste0("I",1:iteration)
   
   maxid.m <- 0
   maxid.f <- 0
@@ -816,14 +847,30 @@ SongEvo <- function(init.inds,
     inds$female.fledglings[inds$female.fledglings < 0] <- 0	
     inds 
   }
+  
+  
+  all.fems0 <- create.females(inds = init.inds, females = females)
+  all.fems0$timestep <- 0
+  all.fems0$iteration <- 0
+  all.fems0 <- all.fems0[numeric(0), , drop=FALSE] #This removes all data from all.fems. 
+  
   ################################ LIFE LOOP ##################################
   ratio.nums <- c()
   for (b in 1:iteration){
   inds <- init.inds
   fems <- create.females(inds = init.inds, females = females)
+  females.init_list[[b]] <- fems
   maxid.m <- max(inds$id,0) #store max id, which determines new id numbers in Hatch
   maxid.f <- max(fems$id,0)
-  
+  timestep.inds <- inds
+  timestep.inds$timestep <- 0
+  timestep.inds$iteration <- b
+  # all.inds <- rbind(all.inds, timestep.inds)
+  inds.all_list[[b]][[1]]<-timestep.inds
+  timestep.fems <- fems
+  timestep.fems$timestep <- 0
+  timestep.fems$iteration <- b
+  females.all_list[[b]][[1]]<-timestep.fems
   
   k <- 1
   while (k <= steps & nrow(inds) >= 1 & nrow(fems) >=1){
@@ -832,11 +879,7 @@ SongEvo <- function(init.inds,
       sex.ratio <- nrow(fems)/nrow(inds)
       print(paste("iteration ", b, ", timestep ", k, ", n males ", NROW(inds),", n females ", nrow(fems), ", n territorial males ", length(which(inds$territory==1)), ', sex ratio: ', sex.ratio, sep=""))}
     if (NROW(inds) >= 3 & NROW(fems) >=1){
-      timestep.inds <- inds
-      timestep.inds$timestep <- k
-      timestep.inds$iteration <- b
-      # all.inds <- rbind(all.inds, timestep.inds)
-      inds.all_list[[b]][[k]]<-timestep.inds
+
       inds$fitness <- 1
       chicks <- hatch(inds = inds)
       chicks.m <- subset(chicks, chicks$sex=='M')
@@ -874,9 +917,23 @@ SongEvo <- function(init.inds,
         if(nrow(fems)>0)
           fems <- disperse(fems)
         else warning("No females to disperse!")
-        if(nrow(chicks.m)>0)
-          chicks.m <- disperse(chicks.m)
-        inds <- rbind(inds, chicks.m)
+        if(is.null(disp.age)){ 
+          inds <- rbind(inds, chicks.m)
+          if(nrow(inds)>0)
+            inds <- disperse(inds)
+          } else {
+            if(max(disp.age, na.rm = TRUE) <= 2){
+              if(nrow(chicks.m)>0)
+                chicks.m <- disperse(chicks.m)
+              inds <- rbind(inds, chicks.m)
+            } else {
+              
+              inds <- rbind(inds, chicks.m)
+              if(sum(inds$age %in% disp.age)>0)
+                inds[inds$age %in% disp.age, ] <- disperse(inds[inds$age %in% disp.age, ])
+            }
+
+          }
         inds <- compete.for.territories(inds)
         if (typeof(mate.comp)=='logical'){
           inds <- compete.for.mates(inds, fems, selectivity)
@@ -903,14 +960,22 @@ SongEvo <- function(init.inds,
         }
         
         
-        
+        timestep.inds <- inds
+        timestep.inds$timestep <- k
+        timestep.inds$iteration <- b
+        # all.inds <- rbind(all.inds, timestep.inds)
+        inds.all_list[[b]][[k+1]]<-timestep.inds
+        timestep.fems <- fems
+        timestep.fems$timestep <- k
+        timestep.fems$iteration <- b
+        females.all_list[[b]][[k+1]]<-timestep.fems
         
         summary.results[b, , "sample.n"][k] <- length(inds$age)
-        summary.results[b, , "trait.pop.mean"][k] <- mean(as.numeric(subset(inds, inds$age==2)$trait))
-        summary.results[b, , "trait.pop.variance"][k] <- var(as.numeric(subset(inds, inds$age==2)$trait))
+        summary.results[b, , "trait.pop.mean"][k] <- mean(as.numeric(subset(inds, inds$age>=min(disp.age, na.rm = TRUE))$trait))
+        summary.results[b, , "trait.pop.variance"][k] <- var(as.numeric(subset(inds, inds$age>=min(disp.age, na.rm = TRUE))$trait))
 
         # cat(c(b,k,dim(inds),dim(summary.results),quantile(as.numeric(inds$trait))))
-        boot_obj <- boot(as.numeric(inds$trait), statistic=sample.mean, R=100)#, strata=mn.res$iteration)	
+        boot_obj <- boot(as.numeric(subset(inds, inds$age>=min(disp.age, na.rm = TRUE))$trait), statistic=sample.mean, R=100)#, strata=mn.res$iteration)	
 
         ci.res <- boot.ci(boot_obj, conf=0.95, type="basic")
         if(length(ci.res$basic[4]) == 0){
@@ -930,29 +995,42 @@ SongEvo <- function(init.inds,
   formals(fast.coords.frame)$fallback.bbox <- bbox(fast.coords.frame(init.inds,x.col = "x1",y.col="y1"))
   if (all==TRUE){
     all.inds=rbind(init=all.inds0,  do.call(rbind,do.call(c,inds.all_list)))
+    all.females=rbind(init=all.fems0,  do.call(rbind,do.call(c,females.all_list)))
     # coordinates(all.inds) = ~x+y 
     # proj4string(all.inds) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84") 
     all.inds=fast.coords.frame(all.inds)
+    all.females=fast.coords.frame(all.females)
     # coordinates(inds) = ~x+y 
     # proj4string(inds) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84") 
     inds=fast.coords.frame(inds, fallback.bbox = bbox(all.inds))
-    z <- list("summary.results"=summary.results, "inds"=inds, "all.inds"=all.inds, "content.bias.info"=content.bias.info, "time"=proc.time()-ptm)
+    females=fast.coords.frame(females, fallback.bbox = bbox(all.females))
+    z <- list("summary.results"=summary.results, "inds"=inds, "all.inds"=all.inds, 
+              "females"=females, "all.females"=all.females,
+              "content.bias.info"=content.bias.info, "time"=proc.time()-ptm)
   }else if (all=="sparse"){
     # all.inds0=fast.coords.frame(all.inds0)
     inds=fast.coords.frame(inds)
+    females=fast.coords.frame(females)
     all.inds<-rapply(inds.all_list,fast.coords.frame,classes = "data.frame",how = "replace")
+    all.females<-rapply(females.all_list,fast.coords.frame,classes = "data.frame",how = "replace")
+    init.females<-rapply(females.init_list,fast.coords.frame,classes = "data.frame",how = "replace")
     # all.inds=rbind(init=all.inds0,  do.call(rbind,do.call(c,inds.all_list)))
     # coordinates(all.inds0) = ~x+y 
     # proj4string(all.inds0) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84") 
     # coordinates(inds) = ~x+y 
     # proj4string(inds) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84") 
     # 
-    z <- list(summary.results=summary.results, inds.last=inds, inds.init=all.inds0, inds.slices=all.inds, "content.bias.info"=content.bias.info, time=proc.time()-ptm)
+    z <- list(summary.results=summary.results, 
+              inds.last=inds, inds.init=all.inds0, inds.slices=all.inds, 
+              females.last=females, females.init=all.fems0, females.slices=all.females, 
+              "content.bias.info"=content.bias.info, time=proc.time()-ptm)
   }else{
     inds=fast.coords.frame(inds)
+    females=fast.coords.frame(females)
     # coordinates(inds) = ~x+y 
     # proj4string(inds) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84") 
-    z <- list("summary.results"=summary.results, "inds"=inds, "content.bias.info"=content.bias.info, "time"=proc.time()-ptm)
+    z <- list("summary.results"=summary.results, "inds"=inds, "females"=females,
+              "content.bias.info"=content.bias.info, "time"=proc.time()-ptm)
   }
   
   # m_pnt(11)
