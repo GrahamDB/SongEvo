@@ -55,53 +55,5 @@ h.test1 <- h.test(summary.results=SongEvo3$summary.results, ts=ts, target.data=t
 # simulated values, providing support for the hypothesis that cultural drift as
 # described in this model is sufficient to describe the evolution of trill
 # frequency bandwidth in this population.
-h.test1
+#h.test1
 
-\dontrun{
-#Plot simulated data in relation to measured data.
-#Plot
-plot(SongEvo3$summary.results[1, , "trait.pop.mean"], 
-     xlab="Year", ylab="Bandwidth (Hz)", xaxt="n", type="n",
-     xlim=c(-0.5, 35.5), ylim=range(SongEvo3$summary.results[, , "trait.pop.mean"], na.rm=TRUE))
-	for(p in 1:iteration){
-		lines(SongEvo3$summary.results[p, , "trait.pop.mean"], col="light gray")
-		}
-freq.mean <- apply(SongEvo3$summary.results[, , "trait.pop.mean"], 2, mean, na.rm=TRUE)
-lines(freq.mean, col="blue")
-axis(side=1, at=seq(0, 35, by=5), labels=seq(1970, 2005, by=5))#, tcl=-0.25, mgp=c(2,0.5,0))
-#Plot 95% quantiles (which are similar to credible intervals)
-quant.means <- apply (SongEvo3$summary.results[, , "trait.pop.mean"], MARGIN=2, 
-                      quantile, probs=c(0.95, 0.05), R=600, na.rm=TRUE)
-lines(quant.means[1,], col="blue", lty=2)
-lines(quant.means[2,], col="blue", lty=2)
- #plot original song values
-library("boot")
-sample.mean <- function(d, x) {
-	mean(d[x])
-}
-boot_hist <- boot(starting.trait, statistic=sample.mean, R=100)#, strata=mn.res$iteration)	
-ci.hist <- boot.ci(boot_hist, conf=0.95, type="basic")
-low <- ci.hist$basic[4]
-high <- ci.hist$basic[5]
-points(0, mean(starting.trait), pch=20, cex=0.6, col="black")
-library("Hmisc")
-errbar(x=0, y=mean(starting.trait), high, low, add=TRUE)
- #plot current song values
-points(rep(ts, length(target.data)), target.data)
-library("boot")
-sample.mean <- function(d, x) {
-	mean(d[x])
-}
-boot_curr <- boot(target.data, statistic=sample.mean, R=100)#, strata=mn.res$iteration)	
-ci.curr <- boot.ci(boot_curr, conf=0.95, type="basic")
-low <- ci.curr$basic[4]
-high <- ci.curr$basic[5]
-points(years, mean(target.data), pch=20, cex=0.6, col="black")
-library("Hmisc")
-errbar(x=years, y=mean(target.data), high, low, add=TRUE)
- #text and arrows
-text(x=11, y=2850, labels="Historical songs", pos=1)
-arrows(x0=5, y0=2750, x1=0.4, y1=mean(starting.trait), length=0.1)
-text(x=25, y=2900, labels="Current songs", pos=1)
-arrows(x0=25, y0=2920, x1=years, y1=mean(target.data), length=0.1)
-}

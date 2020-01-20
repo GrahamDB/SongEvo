@@ -59,57 +59,16 @@ par.sens1 <- par.sens(parm = parm, par.range = par.range,
                       iteration = iteration, steps = years, mate.comp = FALSE, 
                       fixed_parms=extra_parms[names(extra_parms)!=parm], all = TRUE)
 
-\donttest{
   
 #### Examine par.sens results
 # Examine results objects, which include two arrays: 
 
 # The first array, `sens.results`, contains the SongEvo model results for each
 # parameter. It has the following dimensions:
-dimnames(par.sens1$sens.results)
+# dimnames(par.sens1$sens.results)
 
 # The second array, `sens.results.diff` contains the quantile range of trait
 # values across iterations within a parameter value. It has the following
 # dimensions:
-dimnames(par.sens1$sens.results.diff)
+# dimnames(par.sens1$sens.results.diff)
 
-# To assess sensitivity of SongEvo to a range of parameter values, plot the
-# range in trait quantiles per year by the parameter value. We see that
-# territory turnover values of 0.4--0.6 provided means and quantile ranges of
-# trill bandwidths that are similar to those obtained with the published
-# estimate of 0.5, indicating that the Acquire a Territory submodel is robust to
-# realistic variation in those parameter values.
-
-# In the figure, solid gray and black lines show the quantile range of song
-# frequency per year over all iterations as parameterized with the published
-# territory turnover rate (0.5; thick black line) and a range of values from 0.4
-# to 0.6 (in steps of 0.05, light to dark gray). Orange lines show the mean and
-# 2.5th and 97.5th quantiles of all quantile ranges.
-
-# plot of range in trait quantiles by year by parameter value
-plot(1:years, par.sens1$sens.results.diff[1,], 
-     ylim=range(par.sens1$sens.results.diff, na.rm=TRUE), 
-     type="l", 
-     ylab="Quantile range (Hz)", xlab="Year", 
-     col="transparent", xaxt="n")
-axis(side=1, at=seq(0, 35, by=5), labels=seq(1970, 2005, by=5))
-  #Make a continuous color ramp from gray to black
-grbkPal <- colorRampPalette(c('gray','black'))
-  
-  #Plot a line for each parameter value
-for(i in 1:length(par.range)){
-lines(1:years, par.sens1$sens.results.diff[i,], 
-      col=grbkPal(length(par.range))[i])
-}
-  #Plot values from published parameter values
-lines(1:years, par.sens1$sens.results.diff[2,], col="black", lwd=4)
-  #Calculate and plot mean and quantiles
-quant.mean <- apply(par.sens1$sens.results.diff, 2, mean, na.rm=TRUE)
-lines(quant.mean, col="orange")
-#Plot 95% quantiles (which are similar to credible intervals)
-  #95% quantiles of population means (narrower)
-quant.means <- apply(par.sens1$sens.results.diff, MARGIN=2, 
-                     quantile, probs=c(0.975, 0.025), R=600, na.rm=TRUE)
-lines(quant.means[1,], col="orange", lty=2)
-lines(quant.means[2,], col="orange", lty=2)
-}

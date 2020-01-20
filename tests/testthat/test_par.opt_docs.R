@@ -76,7 +76,6 @@ par.opt1 <- par.opt(sens.results=par.sens1$sens.results, ts=ts,
 par.opt1$Residuals
 par.opt1$Target.match
 
-\donttest{
 	
 #### Plot results of `par.opt()`
 #### Accuracy
@@ -164,5 +163,4 @@ errbar(x=years, y=mean(target.data), high, low, add=TRUE)
   #plot panel title
 text(x=3, y=max(par.sens1$sens.results[ , , "trait.pop.mean", ], na.rm=TRUE)-100, 
      labels=paste("Par = ", par.range[i], sep=""))  
-}
 }
