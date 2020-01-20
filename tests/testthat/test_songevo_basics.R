@@ -73,12 +73,12 @@ test_that("Simple checks of starting parameters, single iteration mode, single s
   expect_named( do.call(SongEvo, c(std.args, list(steps=1, all="sparse"))),sparse.names)
   expect_named( do.call(SongEvo, c(std.args, list(steps=1, all=TRUE))),full.names) 
 })
-test_that("Simple checks of starting parameters, single iteration mode, no step",{
-  skip("0 step feature not implemented.")
-  expect_named( do.call(SongEvo, c(std.args, list(steps=0, all=FALSE))),default.names)
-  expect_named( do.call(SongEvo, c(std.args, list(steps=0, all="sparse"))),sparse.names)
-  expect_named( do.call(SongEvo, c(std.args, list(steps=0, all=TRUE))),full.names)
-})
+# test_that("Simple checks of starting parameters, single iteration mode, no step",{
+#   skip("0 step feature not implemented.")
+#   expect_named( do.call(SongEvo, c(std.args, list(steps=0, all=FALSE))),default.names)
+#   expect_named( do.call(SongEvo, c(std.args, list(steps=0, all="sparse"))),sparse.names)
+#   expect_named( do.call(SongEvo, c(std.args, list(steps=0, all=TRUE))),full.names)
+# })
 test_that("Simple checks of starting parameters, single iteration mode, 2 step",{
   expect_named( do.call(SongEvo, c(std.args, list(steps=2, all=FALSE))),default.names)
   expect_named( do.call(SongEvo, c(std.args, list(steps=2, all="sparse"))),sparse.names)
@@ -91,12 +91,12 @@ test_that("Simple checks of starting parameters, multi iteration mode, single st
   expect_named( do.call(SongEvo, c(std.args, list(steps=1, all="sparse"))),sparse.names)
   expect_named( do.call(SongEvo, c(std.args, list(steps=1, all=TRUE))),full.names)
 })
-test_that("Simple checks of starting parameters, multi iteration mode, no step",{
-  skip("0 step feature not implemented.")
-  expect_named( do.call(SongEvo, c(std.args, list(steps=0, all=FALSE))),default.names)
-  expect_named( do.call(SongEvo, c(std.args, list(steps=0, all="sparse"))),sparse.names)
-  expect_named( do.call(SongEvo, c(std.args, list(steps=0, all=TRUE))),full.names)
-})
+# test_that("Simple checks of starting parameters, multi iteration mode, no step",{
+#   skip("0 step feature not implemented.")
+#   expect_named( do.call(SongEvo, c(std.args, list(steps=0, all=FALSE))),default.names)
+#   expect_named( do.call(SongEvo, c(std.args, list(steps=0, all="sparse"))),sparse.names)
+#   expect_named( do.call(SongEvo, c(std.args, list(steps=0, all=TRUE))),full.names)
+# })
 test_that("Simple checks of starting parameters, multi iteration mode, 2 step",{
   expect_named( do.call(SongEvo, c(std.args, list(steps=2, all=FALSE))),default.names)
   expect_named( do.call(SongEvo, c(std.args, list(steps=2, all="sparse"))),sparse.names)

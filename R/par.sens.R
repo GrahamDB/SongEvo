@@ -9,6 +9,7 @@
 #' @param steps The number of steps (e.g. years) per iteration.
 #' @param mate.comp Female preference for mates. Currently specified as “Yes” or “No”. 
 #' @param fixed_parms Named boolean vector identifying which parameters to keep fixed.
+#' @param prin Print out parameter values as they are evaluated? Options are TRUE or FALSE. 
 #' @param all Save data for all individuals? Options are TRUE or FALSE. 
 #'
 #'The function currently allows examination of only one parameter at a time and requires at least two iterations.
@@ -20,7 +21,7 @@
 #' @export
 #' @importFrom stats quantile
 
-par.sens <- function(parm, par.range, iteration, steps, mate.comp, fixed_parms, all) {
+par.sens <- function(parm, par.range, iteration, steps, mate.comp, fixed_parms, prin=FALSE, all=FALSE) {
 	par.rangel <- length(par.range)
 	sens.results <- array(NA, dim=c(iteration, steps, 5, par.rangel), dimnames = list(paste("iteration", seq(1:iteration)), 1:steps, c("sample.n", "trait.pop.mean", "trait.pop.variance", "lci", "uci"), paste("par.val", par.range)))
 	for (p in 1:par.rangel) {
@@ -77,7 +78,7 @@ par.sens <- function(parm, par.range, iteration, steps, mate.comp, fixed_parms, 
 		if (parm=="n.territories") {
 		n.territories=par.range[p]			
 			}
-		print(paste(parm, "= ", par.range[p]))			
+		if(prin) print(paste(parm, "= ", par.range[p]))			
 		z <- with(fixed_parms[!names(fixed_parms) %in% c(parm,"iteration","steps","mate.comp","all")],
 		          SongEvo(init.inds = init.inds, females = females, iteration = iteration, 
 		                  steps = steps, timestep = timestep, terr.turnover = terr.turnover, 

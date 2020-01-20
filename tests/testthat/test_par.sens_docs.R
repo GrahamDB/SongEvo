@@ -55,9 +55,11 @@ extra_parms <- list(init.inds = init.inds,
                     learning.error.sd=200)
 global_parms_key <- which(!names(glo.parms) %in% names(extra_parms))
 extra_parms[names(glo.parms[global_parms_key])]=glo.parms[global_parms_key]
-par.sens1 <- par.sens(parm = parm, par.range = par.range, 
+test_that("Running par.sens", {
+  expect_type(par.sens1 <- par.sens(parm = parm, par.range = par.range, 
                       iteration = iteration, steps = years, mate.comp = FALSE, 
-                      fixed_parms=extra_parms[names(extra_parms)!=parm], all = TRUE)
+                      fixed_parms=extra_parms[names(extra_parms)!=parm], all = TRUE), "list")
+})
 
   
 #### Examine par.sens results

@@ -3,6 +3,7 @@
 #Parameterize SongEvo with initial song data from Schooner Bay, CA in 1969, and
 #then compare simulated data to target (i.e. observed) data in 2005.
 
+test_that("Running mod.val", {
 data("song.data")
 data("glo.parms")
 
@@ -21,7 +22,7 @@ iteration <- 5
 years <- 36
 timestep <- 1
 terr.turnover <- 0.5
-SongEvo2 <- SongEvo(init.inds = init.inds,
+expect_type(SongEvo2 <- SongEvo(init.inds = init.inds,
                     iteration = iteration,
                     steps = years,
                     timestep = timestep,
@@ -43,10 +44,12 @@ SongEvo2 <- SongEvo(init.inds = init.inds,
                     disp.distance.sd = disp.distance.sd, 
                     mate.comp = TRUE, 
                     prin = FALSE,
-                    all=FALSE)
+                    all=FALSE), "list")
 
 #Specify and call mod.val
 ts <- 36
 target.data <- subset(song.data, Population=="Schooner" & Year==2005)$Trill.FBW
-mod.val1 <- mod.val(summary.results=SongEvo2$summary.results, ts=ts, target.data=target.data)
+expect_type(
+mod.val1 <- mod.val(summary.results=SongEvo2$summary.results, ts=ts, target.data=target.data), "list")
 
+})

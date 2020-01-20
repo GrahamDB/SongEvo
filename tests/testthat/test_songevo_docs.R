@@ -42,6 +42,9 @@ all <- TRUE
 
 # Now we call SongEvo with our specifications and save it in an object called
 # SongEvo1.
+
+test_that("Running SongEvo", {
+  expect_type(
 SongEvo1 <- SongEvo(init.inds = init.inds,
                     females = 1.0,
                     iteration = iteration, 
@@ -65,24 +68,25 @@ SongEvo1 <- SongEvo(init.inds = init.inds,
                     disp.distance.sd = disp.distance.sd, 
                     mate.comp = mate.comp, 
                     prin = prin, 
-                    all = all)
-
-#### Examine results from SongEvo model
-
-test_that("Naming structure of example SongEvo result", {
-  expect_type(SongEvo1, "list")
+                    all = all), "list")
+# })
+# 
+# #### Examine results from SongEvo model
+# 
+# test_that("Naming structure of example SongEvo result", {
+#   expect_type(SongEvo1, "list")
   expect_named(SongEvo1, c("summary.results", "inds", "all.inds", "females", "all.females", "content.bias.info", "time"))
-})
+# })
 
 # The model required the following time to run on your computer:
-test_that("Time array for example SongEvo result", {
+# test_that("Time array for example SongEvo result", {
   expect_type(SongEvo1$time, "double")
-})
+# })
 
 # Three main objects hold data regarding the SongEvo model.  Additional objects
 # are used temporarily within modules of the model.
 
-test_that("Expected SpatialPointsDataFrame objects for example SongEvo result", {
+# test_that("Expected SpatialPointsDataFrame objects for example SongEvo result", {
   expect_s4_class(SongEvo1$inds, "SpatialPointsDataFrame")
   expect_s4_class(SongEvo1$females, "SpatialPointsDataFrame")
   expect_s4_class(SongEvo1$all.inds, "SpatialPointsDataFrame")
@@ -91,7 +95,7 @@ test_that("Expected SpatialPointsDataFrame objects for example SongEvo result", 
   expect_true(all(SongEvo1$all.inds$sex=="M"))
   expect_true(all(SongEvo1$females$sex=="F"))
   expect_true(all(SongEvo1$all.females$sex=="F"))
-})
+# })
 # Second, an array (i.e. a multi-dimensional table) entitled “summary.results”
 # includes population summary values for each time step (dimension 1) in each
 # iteration (dimension 2) of the model.  Population summary values are contained
@@ -100,7 +104,7 @@ test_that("Expected SpatialPointsDataFrame objects for example SongEvo result", 
 # studied (“trait.pop.mean” and “trait.pop.variance”), with associated lower
 # (“lci”) and upper (“uci”) confidence intervals.
 
-test_that("Expected summary results array for example SongEvo result", {
+# test_that("Expected summary results array for example SongEvo result", {
   expect_length(dim(SongEvo1$summary.results),3)
   expect_length(dimnames(SongEvo1$summary.results)[[1]],iteration)
   expect_length(dimnames(SongEvo1$summary.results)[[2]],years)

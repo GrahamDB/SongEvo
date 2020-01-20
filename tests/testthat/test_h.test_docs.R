@@ -1,5 +1,6 @@
 ### See vignette for an example that uses all functions in SongEvo.
 
+test_that("Running SongEvo, then h.test", {
 #Prepare initial song data for Bear Valley.
 data("song.data")
 data("glo.parms")
@@ -15,7 +16,7 @@ init.inds$x1 <-  round(runif(n.territories, min=-122.481858, max=-122.447270), d
 init.inds$y1 <-  round(runif(n.territories, min=37.787768, max=37.805645), digits=8)
 
 #Specify and call SongEvo() with test data
-
+expect_type(
 SongEvo3 <- with(glo.parms,SongEvo(init.inds = init.inds,
                     iteration = iteration,
                     steps = years,
@@ -38,7 +39,7 @@ SongEvo3 <- with(glo.parms,SongEvo(init.inds = init.inds,
                     disp.distance.sd = disp.distance.sd,
                     mate.comp = FALSE,
                     prin = FALSE,
-                    all = FALSE))
+                    all = FALSE)), "list")
 
 #Specify and call `h.test()`
 ts=years
@@ -56,4 +57,4 @@ h.test1 <- h.test(summary.results=SongEvo3$summary.results, ts=ts, target.data=t
 # described in this model is sufficient to describe the evolution of trill
 # frequency bandwidth in this population.
 #h.test1
-
+})
