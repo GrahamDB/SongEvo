@@ -57,8 +57,8 @@ SongEvo1 <- SongEvo(init.inds = init.inds,
                     lifespan = lifespan, 
                     phys.lim.min = phys.lim.min, 
                     phys.lim.max = phys.lim.max, 
-                    male.fledge.n.mean = male.fledge.n.mean, 
-                    male.fledge.n.sd = male.fledge.n.sd, 
+                    male.fledge.n.mean = male.fledge.n.mean*2, 
+                    male.fledge.n.sd = male.fledge.n.sd*2, 
                     male.fledge.n = male.fledge.n, 
                     disp.age = disp.age, 
                     disp.distance.mean = disp.distance.mean, 
@@ -82,11 +82,11 @@ test_that("Time array for example SongEvo result", {
 # Three main objects hold data regarding the SongEvo model.  Additional objects
 # are used temporarily within modules of the model.
 
-test_that("Expected data.frame objects for example SongEvo result", {
-  expect_s3_class(SongEvo1$inds, "data.frame")
-  expect_s3_class(SongEvo1$females, "data.frame")
-  expect_s3_class(SongEvo1$all.inds, "data.frame")
-  expect_s3_class(SongEvo1$all.females, "data.frame")
+test_that("Expected SpatialPointsDataFrame objects for example SongEvo result", {
+  expect_s4_class(SongEvo1$inds, "SpatialPointsDataFrame")
+  expect_s4_class(SongEvo1$females, "SpatialPointsDataFrame")
+  expect_s4_class(SongEvo1$all.inds, "SpatialPointsDataFrame")
+  expect_s4_class(SongEvo1$all.females, "SpatialPointsDataFrame")
   expect_true(all(SongEvo1$inds$sex=="M"))
   expect_true(all(SongEvo1$all.inds$sex=="M"))
   expect_true(all(SongEvo1$females$sex=="F"))
@@ -102,8 +102,8 @@ test_that("Expected data.frame objects for example SongEvo result", {
 
 test_that("Expected summary results array for example SongEvo result", {
   expect_length(dim(SongEvo1$summary.results),3)
-  expect_length(dimnames(SongEvo1$summary.results)[[1]],years+1)
-  expect_length(dimnames(SongEvo1$summary.results)[[2]],iteration)
+  expect_length(dimnames(SongEvo1$summary.results)[[1]],iteration)
+  expect_length(dimnames(SongEvo1$summary.results)[[2]],years)
   expect_length(dimnames(SongEvo1$summary.results)[[3]],5)
   expect_equal(dimnames(SongEvo1$summary.results)[[3]],c("sample.n","trait.pop.mean","trait.pop.variance","lci","uci"))
   

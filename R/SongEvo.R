@@ -1003,14 +1003,14 @@ SongEvo <- function(init.inds,
     # coordinates(inds) = ~x+y 
     # proj4string(inds) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84") 
     inds=fast.coords.frame(inds, fallback.bbox = bbox(all.inds))
-    females=fast.coords.frame(females, fallback.bbox = bbox(all.females))
+    females=fast.coords.frame(fems, fallback.bbox = bbox(all.females))
     z <- list("summary.results"=summary.results, "inds"=inds, "all.inds"=all.inds, 
               "females"=females, "all.females"=all.females,
               "content.bias.info"=content.bias.info, "time"=proc.time()-ptm)
   }else if (all=="sparse"){
     # all.inds0=fast.coords.frame(all.inds0)
     inds=fast.coords.frame(inds)
-    females=fast.coords.frame(females)
+    females=fast.coords.frame(fems)
     all.inds<-rapply(inds.all_list,fast.coords.frame,classes = "data.frame",how = "replace")
     all.females<-rapply(females.all_list,fast.coords.frame,classes = "data.frame",how = "replace")
     init.females<-rapply(females.init_list,fast.coords.frame,classes = "data.frame",how = "replace")
@@ -1026,7 +1026,7 @@ SongEvo <- function(init.inds,
               "content.bias.info"=content.bias.info, time=proc.time()-ptm)
   }else{
     inds=fast.coords.frame(inds)
-    females=fast.coords.frame(females)
+    females=fast.coords.frame(fems)
     # coordinates(inds) = ~x+y 
     # proj4string(inds) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84") 
     z <- list("summary.results"=summary.results, "inds"=inds, "females"=females,
