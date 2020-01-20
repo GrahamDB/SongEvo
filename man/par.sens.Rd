@@ -4,7 +4,8 @@
 \alias{par.sens}
 \title{Parameter sensitivity}
 \usage{
-par.sens(parm, par.range, iteration, steps, mate.comp, fixed_parms, all)
+par.sens(parm, par.range, iteration, steps, mate.comp, fixed_parms,
+  prin = FALSE, all = FALSE)
 }
 \arguments{
 \item{parm}{The parameter for which to test sensitivity over one or more values.}
@@ -18,6 +19,8 @@ par.sens(parm, par.range, iteration, steps, mate.comp, fixed_parms, all)
 \item{mate.comp}{Female preference for mates. Currently specified as “Yes” or “No”.}
 
 \item{fixed_parms}{Named boolean vector identifying which parameters to keep fixed.}
+
+\item{prin}{Print out parameter values as they are evaluated? Options are TRUE or FALSE.}
 
 \item{all}{Save data for all individuals? Options are TRUE or FALSE. 
 
